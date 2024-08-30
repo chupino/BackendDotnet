@@ -39,7 +39,7 @@ namespace Backend.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return Content(htmlContent, "text/plain"); // Devolver el contenido como texto plano
+                    return Content(response, "text/plain"); // Devolver el contenido como texto plano
                 }
                 return StatusCode((int)response.StatusCode, "Error al enviar el contenido al worker de Python");
             }
