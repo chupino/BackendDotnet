@@ -6,6 +6,7 @@ RUN mkdir htmls
 COPY doc*.html ./htmls
 COPY Program.cs .
 COPY appsettings*.json .
+COPY DataSeeder.cs .
 COPY ApplicationDbContext.cs .
 COPY Backend.csproj .
 COPY ApiController.cs ./Controllers/

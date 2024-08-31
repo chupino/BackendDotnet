@@ -6,6 +6,12 @@ public class ApplicationDbContext : DbContext
 
     // Define las entidades (tablas) aquí
     public DbSet<HTMLFile> HtmlFiles { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        DataSeeder.Seed(modelBuilder)
+    }
 }
 
 public class HTMLFile
