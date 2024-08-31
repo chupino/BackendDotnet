@@ -2,6 +2,8 @@ version: "3.8"
 services:
   backend:
     build: .
+    ports:
+      - 8000:80
     networks:
       - backendnet
     depends_on:
