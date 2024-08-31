@@ -42,7 +42,7 @@ namespace Backend.Controllers
 
             var jsonContent = new
             {
-                dataset = dataset
+                dataset = dataset,
              	query = query
             };
 
