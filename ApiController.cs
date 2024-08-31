@@ -12,10 +12,12 @@ namespace Backend.Controllers
 
 	private readonly HttpClient _httpClient;
         private readonly string _pythonWorkerUrl = "http://ip172-18-0-8-cr9l76qim2rg00fl4620-5000.direct.labs.play-with-docker.com/procesar-html";
+        private readonly ApplicationDbContext _context;
 	
-        public ApiController(HttpClient httpClient)
+        public ApiController(HttpClient httpClient,ApplicationDbContext context)
         {
-	    _httpClient = httpClient;
+	        _httpClient = httpClient;
+            _context = context;
         }
 
         [HttpGet]
@@ -54,9 +56,26 @@ namespace Backend.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-		 var responseContent = await response.Content.ReadAsStringAsync();
-		 var jsonResponse = JsonDocument.Parse(responseContent).RootElement;
-                 return new JsonResult(jsonResponse);
+                // Leer el contenido del JSON existente
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var existingJsonResponse = JsonDocument.Parse(responseContent).RootElement;
+
+                // Convertir el JSON existente a un objeto mutable
+                var mutableResponse = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(responseContent);
+
+                // Añadir el resultado de la conexión a la base de datos
+                mutableResponse["DatabaseConnection"] = JsonDocument.Parse(JsonSerializer.Serialize(new { ConnectionStatus = canConnect ? "successful" : "failed" })).RootElement;
+
+                // Crear el JSON actualizado
+                var updatedJsonResponse = JsonSerializer.Serialize(mutableResponse);
+
+                // Devolver el JSON actualizado
+                return new ContentResult
+                {
+                    Content = updatedJsonResponse,
+                    ContentType = "application/json",
+                    StatusCode = 200
+                };
             }
             return StatusCode((int)response.StatusCode, "Error al enviar el contenido al worker de Python");
             
