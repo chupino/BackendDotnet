@@ -19,7 +19,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetHtmlContent()
+        public async Task<IActionResult> GetHtmlContent([FromQuery] string query = "")
         {
 	    var htmlDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "htmls");
 	    if (!Directory.Exists(htmlDirectoryPath))
@@ -43,6 +43,7 @@ namespace Backend.Controllers
             var jsonContent = new
             {
                 dataset = dataset
+             	query = query
             };
 
             var jsonString = JsonSerializer.Serialize(jsonContent);
