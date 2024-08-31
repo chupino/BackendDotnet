@@ -1,0 +1,21 @@
+version: 3.8
+services:
+  backend:
+    build: .
+    networks:
+      - backendnet
+    depends_on:
+      - database
+  database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - 1433:1433
+    networks:
+      - backendnet
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Mauricio153."
+
+networks:
+  backendnet:
+    driver: bridge

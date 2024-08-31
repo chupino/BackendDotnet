@@ -5,6 +5,7 @@ WORKDIR Backend
 RUN mkdir htmls
 COPY doc*.html ./htmls
 COPY Program.cs .
+COPY appsettings.json .
 COPY ApiController.cs ./Controllers/
 RUN dotnet build
 ENTRYPOINT dotnet run --urls "http://0.0.0.0:80"
