@@ -55,7 +55,8 @@ namespace Backend.Controllers
             if (response.IsSuccessStatusCode)
             {
 		 var responseContent = await response.Content.ReadAsStringAsync();
-                 return Content(responseContent, "text/plain"); // Devolver el contenido como texto plano
+		 var jsonResponse = JsonDocument.Parse(responseContent).RootElement;
+                 return Json(jsonResponse);
             }
             return StatusCode((int)response.StatusCode, "Error al enviar el contenido al worker de Python");
             
