@@ -61,7 +61,7 @@ namespace Backend.Controllers
             bool canConnect;
             try
             {
-                canConnect = await _context.Database.CanConnect();
+                canConnect =  _context.Database.CanConnect();
             }
             catch (Exception ex)
             {
