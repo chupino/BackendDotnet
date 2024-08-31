@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 public static class DataSeeder
 {
     public static void Seed(ModelBuilder modelBuilder)
