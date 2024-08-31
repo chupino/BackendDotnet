@@ -23,15 +23,16 @@ namespace Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetHtmlContent([FromQuery] string query = "")
         {
-	    var htmlDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "htmls");
-	    if (!Directory.Exists(htmlDirectoryPath))
+            var htmlDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "htmls");
+            if (!Directory.Exists(htmlDirectoryPath))
             {
                 return NotFound("El directorio 'htmls' no existe.");
             }
-	    var htmlFiles = Directory.GetFiles(htmlDirectoryPath, "*.html");
-	    var dataset = new List<object>();
+
+            var htmlFiles = Directory.GetFiles(htmlDirectoryPath, "*.html");
+            var dataset = new List<object>();
             int idCounter = 1;
-	    foreach (var filePath in htmlFiles)
+            foreach (var filePath in htmlFiles)
             {
                 var htmlContent = await System.IO.File.ReadAllTextAsync(filePath);
                 dataset.Add(new
@@ -45,7 +46,7 @@ namespace Backend.Controllers
             var jsonContent = new
             {
                 dataset = dataset,
-             	query = query
+                query = query
             };
 
             var jsonString = JsonSerializer.Serialize(jsonContent);
@@ -53,7 +54,8 @@ namespace Backend.Controllers
 
             // Enviar el JSON al worker de Python
             var response = await _httpClient.PostAsync(_pythonWorkerUrl, content);
-            
+
+            // Verificar la conexión a la base de datos
             bool canConnect;
             try
             {
@@ -68,16 +70,15 @@ namespace Backend.Controllers
             {
                 // Leer el contenido del JSON existente
                 var responseContent = await response.Content.ReadAsStringAsync();
-                var existingJsonResponse = JsonDocument.Parse(responseContent).RootElement;
-
-                // Convertir el JSON existente a un objeto mutable
-                var mutableResponse = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(responseContent);
+                
+                // Convertir el JSON existente a un diccionario
+                var existingJsonResponse = JsonSerializer.Deserialize<Dictionary<string, object>>(responseContent);
 
                 // Añadir el resultado de la conexión a la base de datos
-                mutableResponse["DatabaseConnection"] = JsonDocument.Parse(JsonSerializer.Serialize(new { ConnectionStatus = canConnect ? "successful" : "failed" })).RootElement;
+                existingJsonResponse["DatabaseConnection"] = new { ConnectionStatus = canConnect ? "successful" : "failed" };
 
                 // Crear el JSON actualizado
-                var updatedJsonResponse = JsonSerializer.Serialize(mutableResponse);
+                var updatedJsonResponse = JsonSerializer.Serialize(existingJsonResponse);
 
                 // Devolver el JSON actualizado
                 return new ContentResult
@@ -87,8 +88,8 @@ namespace Backend.Controllers
                     StatusCode = 200
                 };
             }
+
             return StatusCode((int)response.StatusCode, "Error al enviar el contenido al worker de Python");
-            
         }
     }
 }
