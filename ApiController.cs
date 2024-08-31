@@ -53,6 +53,16 @@ namespace Backend.Controllers
 
             // Enviar el JSON al worker de Python
             var response = await _httpClient.PostAsync(_pythonWorkerUrl, content);
+            
+            bool canConnect;
+            try
+            {
+                canConnect = await _context.Database.CanConnectAsync();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Database connection failed: {ex.Message}" });
+            }
 
             if (response.IsSuccessStatusCode)
             {
