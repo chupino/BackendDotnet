@@ -5,7 +5,7 @@ WORKDIR Backend
 RUN mkdir htmls
 COPY doc*.html ./htmls
 COPY Program.cs .
-COPY appsettings.json .
+COPY appsettings*.json .
 COPY ApplicationDbContext.cs .
 COPY Backend.csproj .
 COPY ApiController.cs ./Controllers/
