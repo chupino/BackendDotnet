@@ -3,7 +3,7 @@ WORKDIR app
 RUN dotnet new webapi -n Backend
 WORKDIR Backend
 RUN mkdir htmls
-COPY doc1.html ./htmls
+COPY doc*.html ./htmls
 COPY Program.cs .
 COPY ApiController.cs ./Controllers/
 RUN dotnet build
