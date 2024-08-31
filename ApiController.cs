@@ -7,44 +7,57 @@ namespace Backend.Controllers
 {
     [Route("api")]
     [ApiController]
-    public class HtmlController : ControllerBase
+    public class ApiController : ControllerBase
     {
-        private readonly string _htmlFilePath;
+
 	private readonly HttpClient _httpClient;
         private readonly string _pythonWorkerUrl = "http://ip172-18-0-24-cr970ciim2rg00fp9ulg-5000.direct.labs.play-with-docker.com/procesar-html";
 	
-        public HtmlController(HttpClient httpClient)
+        public ApiController(HttpClient httpClient)
         {
-            // Ruta del archivo HTML en la carpeta del proyecto
-            _htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "htmls", "doc1.html");
 	    _httpClient = httpClient;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetHtmlContent()
         {
-            if (System.IO.File.Exists(_htmlFilePath))
+	    var htmlDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "htmls");
+	    if (!Directory.Exists(htmlDirectoryPath))
             {
-                var htmlContent = await System.IO.File.ReadAllTextAsync(_htmlFilePath);
-
-                var jsonContent = new
-                {
-                    html_list = new[] { htmlContent }
-                };
-
-                var jsonString = JsonSerializer.Serialize(jsonContent);
-                var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-
-                var response = await _httpClient.PostAsync(_pythonWorkerUrl, content);
-
-                if (response.IsSuccessStatusCode)
-                {
-		    var responseContent = await response.Content.ReadAsStringAsync();
-                    return Content(responseContent, "text/plain"); // Devolver el contenido como texto plano
-                }
-                return StatusCode((int)response.StatusCode, "Error al enviar el contenido al worker de Python");
+                return NotFound("El directorio 'htmls' no existe.");
             }
-            return NotFound();
+	    var htmlFiles = Directory.GetFiles(htmlDirectoryPath, "*.html");
+	    var dataset = new List<object>();
+            int idCounter = 1;
+	    foreach (var filePath in htmlFiles)
+            {
+                var htmlContent = await System.IO.File.ReadAllTextAsync(filePath);
+                dataset.Add(new
+                {
+                    id = idCounter++,
+                    path = filePath,
+                    content = htmlContent
+                });
+            }
+
+            var jsonContent = new
+            {
+                dataset = dataset
+            };
+
+            var jsonString = JsonSerializer.Serialize(jsonContent);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+
+            // Enviar el JSON al worker de Python
+            var response = await _httpClient.PostAsync(_pythonWorkerUrl, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+		 var responseContent = await response.Content.ReadAsStringAsync();
+                 return Content(responseContent, "text/plain"); // Devolver el contenido como texto plano
+            }
+            return StatusCode((int)response.StatusCode, "Error al enviar el contenido al worker de Python");
+            
         }
     }
 }
