@@ -63,7 +63,7 @@ namespace Backend.Controllers
             try
             {
                 canConnect =  _context.Database.CanConnect();
-                htmlFileRecords = await _context.HtmlFile.ToListAsync();
+                htmlFileRecords = await _context.HtmlFiles.ToListAsync();
             }
             catch (Exception ex)
             {
