@@ -60,7 +60,7 @@ namespace Backend.Controllers
 
             // Verificar la conexión a la base de datos
             bool canConnect;
-            IEnumerable<HtmlFile> htmlFileRecords = null;
+            IEnumerable<HTMLFile> htmlFileRecords = null;
             try
             {
                 canConnect =  _context.Database.CanConnect();
