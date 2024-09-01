@@ -3,10 +3,20 @@ public static class DataSeeder
 {
     public static void Seed(ModelBuilder modelBuilder)
     {
-        // Insertar datos iniciales en la tabla 'Example'
-        modelBuilder.Entity<HTMLFile>().HasData(
-            new HTMLFile { Id = 1, Path = "Sample Data 1" },
-            new HTMLFile { Id = 2, Path = "Sample Data 2" }
-        );
+        var baseStorageUrl="http://ip172-18-0-41-cr9r9e2im2rg00fl4om0-6000.direct.labs.play-with-docker.com/"
+        var htmlFiles = new List<HTMLFile>();
+        for (int i = 1; i <= 8; i++)
+        {
+            var fileName = $"doc{i}.html";
+            var fileUrl = $"{baseStorageUrl}{fileName}";
+
+            htmlFiles.Add(new HTMLFile 
+            { 
+                Id = i, 
+                Path = fileUrl
+            });
+
+        }
+        modelBuilder.Entity<HTMLFile>().HasData(htmlFiles);
     }
 }
