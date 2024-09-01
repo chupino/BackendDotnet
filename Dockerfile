@@ -14,6 +14,7 @@ COPY appsettings*.json .
 COPY ApplicationDbContext.cs .
 COPY Backend.csproj .
 COPY ApiController.cs ./Controllers/
+COPY DataSeeder.cs .
 
 # Restaura las dependencias
 RUN dotnet restore
