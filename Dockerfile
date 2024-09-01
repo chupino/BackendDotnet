@@ -17,7 +17,9 @@ COPY ApiController.cs ./Controllers/
 COPY DataSeeder.cs .
 COPY dotnet.sh .
 
+RUN sed -i 's/\r$//' dotnet.sh
 RUN chmod 777 dotnet.sh
+
 
 # Restaura las dependencias
 RUN dotnet restore
