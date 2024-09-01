@@ -20,7 +20,7 @@ namespace Backend.Controllers
         public ApiController(HttpClient httpClient,ApplicationDbContext context)
         {
 	        _httpClient = httpClient;
-            _context = context;
+	        _context = context;
         }
 
         [HttpGet]
@@ -47,7 +47,6 @@ namespace Backend.Controllers
                 });
             }*/
 
-            // Verificar la conexión a la base de datos
             bool canConnect;
             IEnumerable<HTMLFile> htmlFileRecords = null;
             try
@@ -89,30 +88,16 @@ namespace Backend.Controllers
             var jsonString = JsonSerializer.Serialize(jsonContent);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
 
-            // Enviar el JSON al worker de Python
-            var response = await _httpClient.PostAsync(_pythonWorkerUrl, content);
-
-            
+            var response = await _httpClient.PostAsync(_pythonWorkerUrl, content);            
 
             if (response.IsSuccessStatusCode)
             {
-                // Leer el contenido del JSON existente
                 var responseContent = await response.Content.ReadAsStringAsync();
-                
-                // Convertir el JSON existente a un diccionario
-                var existingJsonResponse = JsonSerializer.Deserialize<Dictionary<string, object>>(responseContent);
+                var serializeJsonResponse = JsonSerializer.Serialize(JsonSerializer.Deserialize<Dictionary<string, object>>(responseContent));
 
-                // Añadir el resultado de la conexión a la base de datos
-                //existingJsonResponse["DatabaseConnection"] = new { ConnectionStatus = canConnect ? "successful" : "failed" };
-                //existingJsonResponse["HtmlFileRecords"] = htmlFileRecords;
-
-                // Crear el JSON actualizado
-                var updatedJsonResponse = JsonSerializer.Serialize(existingJsonResponse);
-
-                // Devolver el JSON actualizado
                 return new ContentResult
                 {
-                    Content = updatedJsonResponse,
+                    Content = serializeJsonResponse,
                     ContentType = "application/json",
                     StatusCode = 200
                 };

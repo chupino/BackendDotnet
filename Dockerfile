@@ -1,40 +1,24 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0
+from mcr.microsoft.com/dotnet/sdk:8.0
+workdir /app
+run dotnet new webapi -n Backend
+workdir /app/Backend
 
-# Establece el directorio de trabajo
-WORKDIR /app
+copy doc*.html ./htmls/
+copy Program.cs .
+copy appsettings*.json .
+copy ApplicationDbContext.cs .
+copy Backend.csproj .
+copy ApiController.cs ./Controllers/
+copy DataSeeder.cs .
+copy dotnet.sh .
 
-# Crea un nuevo proyecto y establece el directorio de trabajo
-RUN dotnet new webapi -n Backend
-WORKDIR /app/Backend
+run sed -i 's/\r$//' dotnet.sh
+run chmod 777 dotnet.sh
 
-# Copia los archivos del proyecto
-COPY doc*.html ./htmls/
-COPY Program.cs .
-COPY appsettings*.json .
-COPY ApplicationDbContext.cs .
-COPY Backend.csproj .
-COPY ApiController.cs ./Controllers/
-COPY DataSeeder.cs .
-COPY dotnet.sh .
+run dotnet restore
+run dotnet build -c Release
 
-RUN sed -i 's/\r$//' dotnet.sh
-RUN chmod 777 dotnet.sh
+run dotnet tool install --global dotnet-ef
+env PATH="${PATH}:/root/.dotnet/tools"
 
-
-# Restaura las dependencias
-RUN dotnet restore
-
-# Construye la aplicación
-RUN dotnet build -c Release
-
-# Instala dotnet-ef globalmente
-RUN dotnet tool install --global dotnet-ef
-
-# Configura el PATH para herramientas globales
-ENV PATH="${PATH}:/root/.dotnet/tools"
-
-# Aplica las migraciones antes de iniciar la aplicación
-#RUN dotnet ef database update --project ./Backend.csproj
-
-# Inicia la aplicación
-ENTRYPOINT ["./dotnet.sh"]
+entrypoint ["./dotnet.sh"]

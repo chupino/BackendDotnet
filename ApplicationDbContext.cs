@@ -4,7 +4,6 @@ public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-    // Define las entidades (tablas) aquí
     public DbSet<HTMLFile> HtmlFiles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
