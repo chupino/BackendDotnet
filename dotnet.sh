@@ -1,21 +1,22 @@
 #!/bin/bash
 
-# Variables
-MIGRATION_NAME="Initial"
+# Eliminar la base de datos
+echo "Eliminando la base de datos..."
+dotnet ef database drop --force
 
-# Verificar si la migración ya existe
-if dotnet ef migrations list | grep -q "$MIGRATION_NAME"; then
-    echo "La migración '$MIGRATION_NAME' ya existe."
-else
-    echo "Agregando la migración '$MIGRATION_NAME'."
-    dotnet ef migrations add "$MIGRATION_NAME"
-fi
+# Eliminar archivos de migración
+echo "Eliminando archivos de migración..."
+rm -rf Migrations/
 
-# Aplicar migraciones a la base de datos
-echo "Aplicando migraciones a la base de datos."
+# Crear nueva migración
+echo "Creando nueva migración..."
+dotnet ef migrations add Initial
+
+# Aplicar migración a la base de datos
+echo "Aplicando migración a la base de datos..."
 dotnet ef database update
 
 # Iniciar la aplicación
-echo "Iniciando la aplicación."
+echo "Iniciando la aplicación..."
 dotnet run --urls "http://0.0.0.0:80"
 
