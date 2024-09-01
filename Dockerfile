@@ -29,7 +29,7 @@ RUN dotnet tool install --global dotnet-ef
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
 # Aplica las migraciones antes de iniciar la aplicación
-RUN dotnet ef database update --project ./Backend.csproj
+#RUN dotnet ef database update --project ./Backend.csproj
 
 # Inicia la aplicación
 ENTRYPOINT ["dotnet", "run", "--urls", "http://0.0.0.0:80"]
