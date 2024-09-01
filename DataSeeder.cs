@@ -3,7 +3,7 @@ public static class DataSeeder
 {
     public static void Seed(ModelBuilder modelBuilder)
     {
-        var baseStorageUrl="https://serverhtml.s3.us-east-1.amazonaws.com/";
+        var baseStorageUrl="https://serverwebpe.s3.us-east-1.amazonaws.com/";
         var htmlFiles = new List<HTMLFile>();
         for (int i = 1; i <= 8; i++)
         {
