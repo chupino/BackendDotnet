@@ -14,7 +14,7 @@ namespace Backend.Controllers
     {
 
 	private readonly HttpClient _httpClient;
-        private readonly string _pythonWorkerUrl = "http://ip172-18-0-46-crabgcqim2rg00dvbah0-5000.direct.labs.play-with-docker.com/procesar-html";
+        private readonly string _pythonWorkerUrl = "http://ip172-18-0-24-craf1eqim2rg00dvbji0-5000.direct.labs.play-with-docker.com/procesar-html";
         private readonly ApplicationDbContext _context;
 	
         public ApiController(HttpClient httpClient,ApplicationDbContext context)
