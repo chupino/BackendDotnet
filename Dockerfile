@@ -15,6 +15,7 @@ COPY ApplicationDbContext.cs .
 COPY Backend.csproj .
 COPY ApiController.cs ./Controllers/
 COPY DataSeeder.cs .
+COPY dotnet.sh .
 
 # Restaura las dependencias
 RUN dotnet restore
@@ -32,4 +33,4 @@ ENV PATH="${PATH}:/root/.dotnet/tools"
 #RUN dotnet ef database update --project ./Backend.csproj
 
 # Inicia la aplicación
-ENTRYPOINT ["dotnet", "run", "--urls", "http://0.0.0.0:80"]
+ENTRYPOINT ["./dotnet.sh"]
