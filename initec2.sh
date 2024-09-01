@@ -1,7 +1,7 @@
 echo "Inializando EC2, espere 😄"
-sudo yam update -y
-sudo yam install docker -y
-sudo yam install git -y
+sudo yum update -y
+sudo yum install docker -y
+sudo yum install git -y
 sudo systemctl start docker
 sudo usermod -aG docker $USER
 newgrp docker
