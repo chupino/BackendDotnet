@@ -3,7 +3,6 @@ workdir /app
 run dotnet new webapi -n Backend
 workdir /app/Backend
 
-copy doc*.html ./htmls/
 copy Program.cs .
 copy appsettings*.json .
 copy ApplicationDbContext.cs .
