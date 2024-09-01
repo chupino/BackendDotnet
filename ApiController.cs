@@ -59,9 +59,11 @@ namespace Backend.Controllers
 
             // Verificar la conexión a la base de datos
             bool canConnect;
+            IEnumerable<HtmlFile> htmlFileRecords = null;
             try
             {
                 canConnect =  _context.Database.CanConnect();
+                htmlFileRecords = await _context.HtmlFile.ToListAsync();
             }
             catch (Exception ex)
             {
@@ -78,6 +80,7 @@ namespace Backend.Controllers
 
                 // Añadir el resultado de la conexión a la base de datos
                 existingJsonResponse["DatabaseConnection"] = new { ConnectionStatus = canConnect ? "successful" : "failed" };
+                existingJsonResponse["HtmlFileRecords"] = htmlFileRecords;
 
                 // Crear el JSON actualizado
                 var updatedJsonResponse = JsonSerializer.Serialize(existingJsonResponse);
