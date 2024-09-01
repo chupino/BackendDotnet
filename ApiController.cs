@@ -26,6 +26,7 @@ namespace Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetHtmlContent([FromQuery] string query = "")
         {
+            /*
             var htmlDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "htmls");
             if (!Directory.Exists(htmlDirectoryPath))
             {
@@ -44,19 +45,7 @@ namespace Backend.Controllers
                     path = filePath,
                     content = htmlContent
                 });
-            }
-
-            var jsonContent = new
-            {
-                dataset = dataset,
-                query = query
-            };
-
-            var jsonString = JsonSerializer.Serialize(jsonContent);
-            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-
-            // Enviar el JSON al worker de Python
-            var response = await _httpClient.PostAsync(_pythonWorkerUrl, content);
+            }*/
 
             // Verificar la conexión a la base de datos
             bool canConnect;
@@ -71,6 +60,40 @@ namespace Backend.Controllers
                 return StatusCode(500, new { message = $"Database connection failed: {ex.Message}" });
             }
 
+            var htmlFilesWithContent = new List<object>();
+
+            foreach (var htmlFile in htmlFileRecords)
+            {
+                try
+                {
+                    var htmlContent = await _httpClient.GetStringAsync(htmlFile.Path);
+                    htmlFilesWithContent.Add(new {
+                        id = htmlFile.Id,
+                        path = htmlFile.Path,
+                        content = htmlContent
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"Error fetching HTML content from {htmlFile.Path}: {ex.Message}");
+                }
+            }
+
+
+            var jsonContent = new
+            {
+                dataset = htmlFilesWithContent,
+                query = query
+            };
+
+            var jsonString = JsonSerializer.Serialize(jsonContent);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+
+            // Enviar el JSON al worker de Python
+            var response = await _httpClient.PostAsync(_pythonWorkerUrl, content);
+
+            
+
             if (response.IsSuccessStatusCode)
             {
                 // Leer el contenido del JSON existente
@@ -80,8 +103,8 @@ namespace Backend.Controllers
                 var existingJsonResponse = JsonSerializer.Deserialize<Dictionary<string, object>>(responseContent);
 
                 // Añadir el resultado de la conexión a la base de datos
-                existingJsonResponse["DatabaseConnection"] = new { ConnectionStatus = canConnect ? "successful" : "failed" };
-                existingJsonResponse["HtmlFileRecords"] = htmlFileRecords;
+                //existingJsonResponse["DatabaseConnection"] = new { ConnectionStatus = canConnect ? "successful" : "failed" };
+                //existingJsonResponse["HtmlFileRecords"] = htmlFileRecords;
 
                 // Crear el JSON actualizado
                 var updatedJsonResponse = JsonSerializer.Serialize(existingJsonResponse);
